@@ -29,4 +29,47 @@ class School():
       self.name, 
       self.numberOfStudents
                   )
+class Primary(School):
+  def __init__(self, name, numberOfStudents,pickupPolicy):
+    super().__init__(name = name, level="primary", numberOfStudents = numberOfStudents)
+    self.pickupPolicy = pickupPolicy
 
+  def __repr__(self):
+    parentRepr = super().__repr__()
+    return parentRepr + " The pickup policy is {pickupPolicy}".format(pickupPolicy = self.pickupPolicy)
+
+  def getPickupPolicy(self):
+    return self.pickupPolicy
+
+
+class Middle(School):
+  def __init__(self, name, numberOfStudents):
+    super().__init__(name = name, level="middle", numberOfStudents = numberOfStudents)
+
+
+class High(School):
+  def __init__(self, name, numberOfStudents,sportsTeams):
+    super().__init__(name = name, level="high", numberOfStudents = numberOfStudents)
+    self.sportsTeams = sportsTeams
+
+  def __repr__(self):
+    parentRepr = super().__repr__()
+    return parentRepr + " The school's sports teams are {sportsTeams}".format(sportsTeams = self.sportsTeams)
+
+  def getSportsTeams(self):
+    return self.sportsTeams
+
+a = Middle("Codecademy", 100)
+print(a)
+# print(a.get_name())
+# print(a.get_level())
+# a.set_NumOfStudents(200)
+# print(a.get_NumOfStudents())
+
+b = Primary("Codecademy", 300, "Pickup Allowed")
+# print(b.getPickupPolicy())
+print(repr(b))
+
+c = High("Codecademy High", 500, ["Tennis", "Basketball"])
+print(c.getSportsTeams())
+print(c)
