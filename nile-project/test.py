@@ -64,10 +64,10 @@ def test_driver(f):
 
 
 class Trip:
-    def __init__(self, cost, driver, driver_cost):
+    def __init__(self, cost, driver, drive_cost):
         self.cost = cost
-        driver.cost = driver_cost
         self.driver = driver
+        self.drive_cost = drive_cost
 
 
 trip1 = Trip(200, driver1, 15)

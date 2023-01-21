@@ -18,11 +18,10 @@ def calculate_shipping_cost(from_coords, to_coords, shipping_type="Overnight"):
 # Define calculate_driver_cost() here
 def calculate_driver_cost(distance, *args):
     cheapest_driver = None
-    cheapest_driver_prices = None
+    cheapest_driver_price = None
     for driver in args:
         driver_time = distance / driver.speed
         price_for_driver = driver.salary * driver_time
-        # print('Locals are : {}', format(locals()))
         if cheapest_driver is None:
             cheapest_driver = driver
             cheapest_driver_price = price_for_driver
@@ -35,14 +34,13 @@ def calculate_driver_cost(distance, *args):
 
 # Test the function by calling
 test_function(calculate_driver_cost)
-print(cheapest_driver)
-# print('Globals are : {}', format(globals()))
+
 
 # Define calculate_money_made() here
 def calculate_money_made(**trips):
     total_money_made = 0
     for trip_id, trip in trips.items():
-        trip_revenue = trip.cost - trip.driver.cost
+        trip_revenue = trip.cost - trip.drive_cost
         total_money_made += trip_revenue
     return total_money_made
 
