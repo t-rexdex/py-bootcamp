@@ -13,12 +13,12 @@ def calculate_shipping_cost(from_coords, to_coords, shipping_type="Overnight"):
 
 
 # Test the function by calling
-test_function(calculate_shipping_cost)
+# test_function(calculate_shipping_cost)
 
 # Define calculate_driver_cost() here
 def calculate_driver_cost(distance, *args):
     cheapest_driver = None
-    cheapest_driver_prices = None
+    cheapest_driver_price = None
     for driver in args:
         driver_time = distance / driver.speed
         price_for_driver = driver.salary * driver_time
@@ -40,10 +40,13 @@ test_function(calculate_driver_cost)
 def calculate_money_made(**trips):
     total_money_made = 0
     for trip_id, trip in trips.items():
-        trip_revenue = trip.cost - trip.driver.cost
+
+        trip_revenue = trip.cost - trip.drive_cost
+
         total_money_made += trip_revenue
     return total_money_made
 
 
 # Test the function by calling
 test_function(calculate_money_made)
+
