@@ -70,6 +70,7 @@ class Trip:
         self.drive_cost = drive_cost
 
 
+
 trip1 = Trip(200, driver1, 15)
 trip2 = Trip(300, driver2, 40)
 
