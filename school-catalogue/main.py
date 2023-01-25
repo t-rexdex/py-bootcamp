@@ -71,6 +71,7 @@ class High(School):
         return self.sportsTeams
 
 
+
 a = School("Codecademy", "high", 100)
 print(a)
 # print(a.get_name())
