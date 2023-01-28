@@ -1,9 +1,20 @@
 from math import sin, cos, atan2, sqrt
+from typing import Union
 
+class TypeMismatchError(Error):
+    print("Custom type mismatch")
 
-def get_distance(from_lat, from_long, to_lat, to_long):
+# easy because it does not rely on any other functions that you already wrote
+def get_distance(from_lat: int, from_long: int, to_lat: int, to_long: int) -> float:
     dlon = to_long - from_long
-    dlat = from_lat - to_lat
+    
+    try:
+        dlat = from_lat - to_lat
+    except TypeMismatchError: # cannot subtract two things if they are not the same type
+        return None
+
+    # new stuff
+
     a = (sin(dlat / 2)) ** 2 + cos(from_lat) * cos(to_lat) * (sin(dlon / 2)) ** 2
     c = 2 * atan2(sqrt(a), sqrt(1 - a))
     distance = a * c
@@ -17,5 +28,5 @@ SHIPPING_PRICES = {
 }
 
 
-def format_price(price):
+def format_price(price: Union[int, float]) -> str:
     return "${0:.2f}".format(price)

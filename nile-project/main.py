@@ -1,10 +1,15 @@
 from nile import get_distance, format_price, SHIPPING_PRICES
 from test import test_function
 
+
 from_coords = (5, 6)
 to_coords = (9, 7)
 # Define calculate_shipping_cost() here:
-def calculate_shipping_cost(from_coords, to_coords, shipping_type="Overnight"):
+def calculate_shipping_cost(
+    from_coords: list[int],
+    to_coords: list[int],
+    shipping_type: str = "Overnight"
+) -> str:
     from_lat, from_long = from_coords
     to_lat, to_long = to_coords
     distance = get_distance(from_lat, from_long, to_lat, to_long)
