@@ -1,5 +1,21 @@
 from nile import get_distance, format_price, SHIPPING_PRICES
-from test import test_function
+
+
+class Driver:
+    def __init__(self, speed, salary):
+        self.speed = speed
+        self.salary = salary
+
+    def __repr__(self):
+        return "Nile Driver speed {} salary {}".format(self.speed, self.salary)
+
+
+class Trip:
+    def __init__(self, cost, driver, drive_cost):
+        self.cost = cost
+        self.driver = driver
+        self.drive_cost = drive_cost
+
 
 from_coords = (5, 6)
 to_coords = (9, 7)
@@ -12,11 +28,8 @@ def calculate_shipping_cost(from_coords, to_coords, shipping_type="Overnight"):
     return format_price(price)
 
 
-# Test the function by calling
-# test_function(calculate_shipping_cost)
-
 # Define calculate_driver_cost() here
-def calculate_driver_cost(distance, *args):
+def calculate_cheapest_driver_cost(distance, *args):
     cheapest_driver = None
     cheapest_driver_price = None
     for driver in args:
@@ -32,10 +45,6 @@ def calculate_driver_cost(distance, *args):
     return cheapest_driver_price, cheapest_driver
 
 
-# Test the function by calling
-test_function(calculate_driver_cost)
-
-
 # Define calculate_money_made() here
 def calculate_money_made(**trips):
     total_money_made = 0
@@ -45,8 +54,4 @@ def calculate_money_made(**trips):
 
         total_money_made += trip_revenue
     return total_money_made
-
-
-# Test the function by calling
-test_function(calculate_money_made)
 
