@@ -19,3 +19,5 @@ SHIPPING_PRICES = {
 
 def format_price(price):
     return "${0:.2f}".format(price)
+
+print(get_distance(0,0,1,1))
