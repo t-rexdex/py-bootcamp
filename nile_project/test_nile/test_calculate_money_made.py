@@ -7,7 +7,7 @@ class TestTrip:
     def test_details(self):
         driver1 = Driver(4, 10)
         t_test = Trip(200, driver1, 15.0)
-        assert (200, driver1, float(15))  == (t_test.cost, t_test.driver, t_test.drive_cost)
+        assert (200, driver1, 15)  == (t_test.cost, t_test.driver, t_test.drive_cost), 'Expected interger got a str instead'
 driver1 = Driver(4, 10)
 driver2 = Driver(7, 20)
 

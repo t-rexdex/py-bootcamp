@@ -1,6 +1,5 @@
 from nile_project.main import * # not importing anything why did it lose access to the path
-
-
+import pytest
 
 def test_get_distance():
     # answer expected to get from above inputs
@@ -26,17 +25,26 @@ def test_get_distance():
     assert expected_ans == received_ans
 
     ## test to throw an error if lat and lon values fall out of the following ranges: [-90,90] and [-180, 180]
-    # maybe add try and except?
-    from_lat, from_long = (-9,0)
-    assert from_lat >= -90 and from_lat <= 90
-    assert from_long >= -90 and from_long <= 90
+    # now to utilize Notreal_lat_or_long exception class to handle unreal input
+    from_lat, from_long = (-91,0)
+    to_lat, to_long = (1.0,1.0)
 
-    to_lat, to_long = (1,180)
-    assert to_lat >= -180 and to_lat <= 180
-    assert to_long >= -180 and to_long <= 180
+    with pytest.raiseError(Unreal_Lat_or_Long(from_lat, from_long, to_lat, to_long)):
+        get_distance(from_lat, from_long, to_lat, to_long)
+    ''' getting the following error message:
+    name = 'raiseError'
 
-    # need to do test with mismatch type error should fail
-    # holding off because i do not want to copy huy's code without understanding
+    def __getattr__(name: str) -> object:
+        if name == "Instance":
+            # The import emits a deprecation warning.
+            from _pytest.python import Instance
+    
+            return Instance
+>       raise AttributeError(f"module {__name__} has no attribute {name}")
+E       AttributeError: module pytest has no attribute raiseError
+
+/usr/local/Caskroom/miniconda/base/envs/bootcamp/lib/python3.11/site-packages/pytest/__init__.py:169: AttributeError
+    '''
 
     
 def test_format_price():

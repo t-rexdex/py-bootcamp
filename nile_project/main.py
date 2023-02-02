@@ -16,6 +16,15 @@ class Trip:
         self.driver = driver
         self.drive_cost = drive_cost
 
+class Unreal_Lat_or_Long(Exception):
+    def __init__(self, from_lat, from_long, to_lat, to_long):
+        self.from_lat = from_lat
+        self.from_long = from_long
+        self.to_lat = to_lat
+        self.to_long = to_long
+
+    def __str__(self):
+        return 'Got {self.from_lat}, {self.from_long} and {self.to_lat}, {self.to_long} expected value between (-90, 90) for the latitude and (-180, 180) for longitude'
 
 from_coords = (5, 6)
 to_coords = (9, 7)
