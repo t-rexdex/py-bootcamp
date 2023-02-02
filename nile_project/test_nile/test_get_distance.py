@@ -1,11 +1,5 @@
+from nile_project.main import * # not importing anything why did it lose access to the path
 
-import sys
-sys.path.append("/Users/RexLAP/PycharmProjects/py_bootcamp/nile_project/")
-
-# from nile import *
-from main import * # not importing anything why did it lose access to the path
-
-import pytest
 
 
 def test_get_distance():

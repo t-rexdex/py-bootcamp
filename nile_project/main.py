@@ -1,4 +1,4 @@
-from nile import get_distance, format_price, SHIPPING_PRICES
+from nile_project.nile import get_distance, format_price, SHIPPING_PRICES
 
 
 class Driver:
@@ -54,4 +54,3 @@ def calculate_money_made(**trips):
 
         total_money_made += trip_revenue
     return total_money_made
-
