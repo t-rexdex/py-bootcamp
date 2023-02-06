@@ -10,35 +10,32 @@ def create_connection(path_for_file: str) -> object :
         if os.path.isfile(path_for_file):
             print('File already exists. Reestablishing connection')
         else:
-            print('Creating database and establishing connection')
+            print('Creating database and establishing a connection')
         con = sqlite3.connect(path_for_file)
+        c = con.cursor()
     except Exception as e:
         print(e)
 
-    return con
+    return con, c
         
-def create_table(con, table_name, *args):
+    
+def create_table(con, tables: dict, primary_key, type):
+    '''
+    Not fully functioning, need to refactor so that the create table function can pull the primary key for EACH table instead of only assigning
+    for a single table like I am currently doing.
+    Also need to create a test file for testing these methods
+    '''
+
     try:
-        c = con.cursor()
-        table_stuff = f'CREATE TABLE {table_name}(# how do i insert args into here appropriately?  )'
-        # huy showed me how to map this as a dictionary! lets use this method
-        c.execute()
+        # c = con.cursor()
+        for table in tables.keys(): # iterates through outside keys of dict, in this case there is only 1. It should be able to populate multiple tables if the dictionary is setup properly.
+            c.execute("CREATE TABLE {} ({} {} PRIMARY key)".format(table, primary_key, type)) # creates table using table iterable as the name and the primary keey
+            for k, v in tables[table].items():
+                c.execute("ALTER TABLE {} \
+                            ADD {} {}".format(table, k, v))   
+            con.commit()
     except Exception as e:
         print(e)
-# create cursor object
-# create table maybe have some logic if this table exists currently
-def create_table_with_fields(*args):
-    '''
-        Function exists to take arguments and use those to create a table with those arguments as column headers
-        need to convert this into use with sqlite
-    '''
-    table_lst = []
-    for arg in args:
-        table_lst.append(arg)
-    # table_dict = {}
-    # for arg in args:
-    #     table_dict[arg] = None
-    return table_lst # returns a header for table
 
 
 
@@ -90,10 +87,22 @@ def need_to_contain():
 
 # with random.choices use something like the to go through a list of streets and create addresses 
 def main():
-    create_connection('./nile_project/dummy.db')
+    con = create_connection('./nile_project/table_population/dummy.db') # establish connection
 
-    dummy = create_table_with_fields('trip_id','name', 'source_location', 'destination_location', 'duration_mins' )
-    print(dummy)
+            # 'Trip_id': 'str PRIMARY KEY',
+    tables = {
+        'Trip_info': {
+            'name': 'str',
+            'source_location': 'str', 
+            'destination_location': 'str', 
+            'duration_mins': 'float', 
+        } # data to create tables
+    }
+
+
+    create_table(con, tables, 'Trip_id', 'TEXT') # trying to create table that fills in information using a dictionary, primary key, and primary key type
+    ##### Playing with the code 
+
 
 
 if __name__ == "__main__":
