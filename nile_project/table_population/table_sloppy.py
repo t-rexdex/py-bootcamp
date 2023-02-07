@@ -19,16 +19,14 @@ def create_connection(path_for_file: str) -> object :
     return con, c
         
     
-def create_table(con, c, columns_dict: dict):
+def create_table(con, c, fields_dict: dict):
     '''
-    Not fully functioning, need to refactor so that the create table function can pull the primary key for EACH table instead of only assigning
-    for a single table like I am currently doing.
     Also need to create a test file for testing these methods
     '''
 
     try:
-        for table in columns_dict:
-            columns = "(" + ",\n".join(["{} {}".format(k,v) for k,v in columns_dict[table].items()]) + ")"
+        for table in fields_dict:
+            columns = "(" + ",\n".join(["{} {}".format(k,v) for k,v in fields_dict[table].items()]) + ")"
             c = con.cursor()
             c.execute("CREATE TABLE " + table + "\n" + columns) # there has to be a better way to implement the name of this table
             con.commit()
@@ -36,13 +34,19 @@ def create_table(con, c, columns_dict: dict):
     except Exception as e:
         print(e)
 
+def print_table_fields(fields_dict: dict): # need to rework may need to also add the cursor, maybe create a class so self can be thrown into the attributes
+    for table in fields_dict:
+        print(f'\nColumns in {table} table:')
+        data=c.execute('''SELECT * FROM your_mom''') # need to fix this line so sqlite can properly call the correct table
+        for column in data.description:
+            print(column[0])
 
 
 def main():
-    con, c = create_connection('./nile_project/table_population/dummy.db') # establish connection
+    con, c = create_connection('./nile_project/table_population/file.db') # establish connection
 
     tables = {
-        'your_mom': {
+        'test': {
             'Trip_id': 'str PRIMARY KEY',
             'name': 'str',
             'source_location': 'str', 
@@ -52,24 +56,19 @@ def main():
     }
 
 
-    create_table(con, c, tables) # trying to create table that fills in information using a dictionary, primary key, and primary key type
-    ##### Playing with the code 
-
-
 
 if __name__ == "__main__":
     main()   
 
-# columns_dict = {
-#     'Trip_info': {
-        # 'Trip_id': 'str PRIMARY KEY',
-#         'name': 'str',
-#         'source_location': 'str', 
-#         'destination_location': 'str', 
-#         'duration_mins': 'float', 
-#     } # data to create tables
-# }
 
-# for table in columns_dict:
-#     columns = "(" + ",\n".join(["{} {}".format(k,v) for k,v in columns_dict[table].items()]) + ")"
-#     print(type(table))
+    # create_table(con, c, tables) # trying to create table that fills in information using a dictionary, primary key, and primary key type
+    ##### Playing with the code 
+    # c.execute("""
+    #     INSERT INTO your_mom VALUES
+    #         ('Tyler', 'Dexter', '1', 'Coupe', 60),
+    #         ('Huy', 'Tran', '2', 'Sedan', 50)
+    # """)
+    # con.commit()
+    # drive_response = c.execute('SELECT * FROM your_mom')
+    # print(drive_response.fetchall())
+    # print('\n') 

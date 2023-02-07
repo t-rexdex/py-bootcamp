@@ -19,24 +19,38 @@ def create_connection(path_for_file: str) -> object :
     return con, c
         
     
-def create_table(con, tables: dict, primary_key, type):
+def create_table(con, c, fields_dict: dict):
     '''
-    Not fully functioning, need to refactor so that the create table function can pull the primary key for EACH table instead of only assigning
-    for a single table like I am currently doing.
-    Also need to create a test file for testing these methods
+    Need to create a test file for testing these methods
     '''
 
     try:
-        # c = con.cursor()
-        for table in tables.keys(): # iterates through outside keys of dict, in this case there is only 1. It should be able to populate multiple tables if the dictionary is setup properly.
-            c.execute("CREATE TABLE {} ({} {} PRIMARY key)".format(table, primary_key, type)) # creates table using table iterable as the name and the primary keey
-            for k, v in tables[table].items():
-                c.execute("ALTER TABLE {} \
-                            ADD {} {}".format(table, k, v))   
+        for table in fields_dict:
+            columns = "(" + ",\n".join(["{} {}".format(k,v) for k,v in fields_dict[table].items()]) + ")"
+            c = con.cursor()
+            c.execute("CREATE TABLE " + table + "\n" + columns) # there has to be a better way to implement the name of this table
             con.commit()
+            # print(f'Table {table} was created with the following fields \n{columns}')
+            print('Table was sucessfully created')
     except Exception as e:
         print(e)
 
+def print_table_fields(con, c, fields_dict): # need to rework may need to also add the cursor, maybe create a class so self can be thrown into the attributes
+    '''
+    Not perfectly executed, deciding if this is necessary or not, 
+    It is mostly for debugging and my personal use.
+    '''
+    for table in fields_dict:
+        print(f'\nColumns in {table} table:')
+        data=c.execute("SELECT * FROM " + table ) # need to fix this line so sqlite can properly call the correct table
+        for column in data.description:
+            print(column[0])
+
+def print_table_data():
+    '''
+    samething as above, trying to decide if this method is necessary
+    '''
+    pass
 
 
 def need_to_contain():        
@@ -86,12 +100,14 @@ def need_to_contain():
 # now need to create something that goes through this list and places into the sql table
 
 # with random.choices use something like the to go through a list of streets and create addresses 
-def main():
-    con = create_connection('./nile_project/table_population/dummy.db') # establish connection
 
-            # 'Trip_id': 'str PRIMARY KEY',
+
+def main():
+    con, c = create_connection('./nile_project/table_population/file.db') # establish connection
+
     tables = {
         'Trip_info': {
+            'Trip_id': 'str PRIMARY KEY',
             'name': 'str',
             'source_location': 'str', 
             'destination_location': 'str', 
@@ -100,7 +116,9 @@ def main():
     }
 
 
-    create_table(con, tables, 'Trip_id', 'TEXT') # trying to create table that fills in information using a dictionary, primary key, and primary key type
+    create_table(con, c, tables) 
+
+    print_table_fields(con, c, tables) 
     ##### Playing with the code 
 
 
