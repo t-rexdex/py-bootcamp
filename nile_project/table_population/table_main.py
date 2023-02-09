@@ -53,15 +53,13 @@ def print_table_data():
     pass
 
 
-def need_to_contain():        
-# fill table 
-    n = 100 # number of rows in the table 
-    trip_ids = list(range(1,n+1)) # 1) trip_id: a unique number from 1 to 100,000. Meaning the table will have 100,000 unique records
-
-    drivers = ['Alon', 'Sarah', 'Hailey', 'Tyler', 'Chaos', 'Bertie', 'Shiner', 'Huy', 'Jon', 'Luis'] # 2) name: a random string chosen from (alon, sarah, hailey, tyler, chaos, birtie, shiner, huy, jon, luis)
-    drivers_long_list = random.choices(drivers, k=100) # allows list to populate with repetited items
-
-    streets = ['Street_1', 'Street_2', 'Street_3']
+def create_street_mapping_dictionary(number_of_total_streets: int) -> dict:
+    '''
+    Creating a basic street mapping dictionary with distances between each street
+    '''
+    streets = []
+    for street_number in range(number_of_total_streets):
+        streets.append('Street_' + str(street_number+1))
     street_dict = {}
     for i in range(len(streets)): # goes from 0 > 1 > 2 
         m = streets[i] # street_i
@@ -77,16 +75,38 @@ def need_to_contain():
                 street_dict[m][n] = random.randint(50, 800) # currently populates a nested dictionary with values that do not match their permutated cousin
             else:
                 street_dict[m][n] = street_dict[n][m]
-            # in order to fix this i need to have another loop search in previous entries
-    print(street_dict)
-            #
-    '''
-    street 1 key is created. street 2 key is created next, in order for the street 2 key to match dict[street1][street2] 
-    dict[street2] needs to look at dict[street1] 
-    curretly the code is not allowing me
-    '''
+    return street_dict
 
-    print(street_dict)
+def create_trip_log( 
+    total_number_of_trips: int, 
+    driver_list: list, 
+    street_dict: dict
+    ) -> tuple| list :
+    ''' 
+    Need to come up with a way that inserts data into the database or maybe just create a log for further use
+    I know the current way i have the code working is that there is a number of items being stored in memory
+    total_number_of_trips: int to represent the amount of trips created also resulting in the amount of data to insert into the database 
+    driver_list :list a list of drivers to choose from 
+    street_dict :dict for street mapping representation
+    '''
+    trip_log = {}
+    trip_ids = list(range(1, total_number_of_trips+1))
+    drivers_long_list = random.choices(driver_list, k = total_number_of_trips) # allows list to populate with repetited items
+    mapping_start_locations = random.choices(list(street_dict.keys()), k = total_number_of_trips)
+    mapping_end_locations = random.choices(list(street_dict.keys()), k = total_number_of_trips)    
+    for trip in range(total_number_of_trips):
+        trip_log[trip + 1] = { drivers_long_list[trip], mapping_start_locations[trip], mapping_end_locations[trip] }
+
+    return trip_log
+
+def need_to_contain():        
+# fill table 
+    n = 100 # number of rows in the table 
+    trip_ids = list(range(1,n+1)) # 1) trip_id: a unique number from 1 to 100,000. Meaning the table will have 100,000 unique records
+
+    drivers = ['Alon', 'Sarah', 'Hailey', 'Tyler', 'Chaos', 'Bertie', 'Shiner', 'Huy', 'Jon', 'Luis'] # 2) name: a random string chosen from (alon, sarah, hailey, tyler, chaos, birtie, shiner, huy, jon, luis)
+
+   
  
 
     ''' 
@@ -103,7 +123,7 @@ def need_to_contain():
 
 
 def main():
-    con, c = create_connection('./nile_project/table_population/file.db') # establish connection
+    # con, c = create_connection('./nile_project/table_population/file.db') # establish connection
 
     tables = {
         'Trip_info': {
@@ -116,12 +136,27 @@ def main():
     }
 
 
-    create_table(con, c, tables) 
+    # create_table(con, c, tables) 
 
-    print_table_fields(con, c, tables) 
-    ##### Playing with the code 
+    # print_table_fields(con, c, tables) 
 
+
+    # ##### Playing with the code 
+    street_dict_mapping = create_street_mapping_dictionary(500) # mapping created need to insert this into db
+    trip_log = create_trip_log(10, ['Alon', 'Sarah', 'Hailey', 'Tyler', 'Chaos', 'Bertie', 'Shiner', 'Huy', 'Jon', 'Luis'], street_dict_mapping)
+    # for some reason the dictionary that im going to use to populate the db is not inserting in the right order
+    print(trip_log)
 
 
 if __name__ == "__main__":
     main()   
+
+# driver_list = ['Alon', 'Sarah', 'Hailey', 'Tyler', 'Chaos', 'Bertie', 'Shiner', 'Huy', 'Jon', 'Luis']
+# total_number_of_trips = 100
+# drivers_long_list = random.choices(driver_list, k = total_number_of_trips) # allows list to populate with repetited items
+# mapping_start_locations = random.choices(list(street_dict_mapping.keys()), k = 10)
+# mapping_end_locations = random.choices(list(street_dict_mapping.keys()), k = 10)
+# trip_ids = list(range(1, total_number_of_trips+1))
+# print(mapping_start_locations)
+# print('This is end locations')
+# print(mapping_end_locations)
