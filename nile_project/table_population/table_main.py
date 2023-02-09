@@ -35,6 +35,7 @@ def create_table(con, c, fields_dict: dict):
     except Exception as e:
         print(e)
 
+
 def print_table_fields(con, c, fields_dict): # need to rework may need to also add the cursor, maybe create a class so self can be thrown into the attributes
     '''
     Not perfectly executed, deciding if this is necessary or not, 
@@ -46,11 +47,58 @@ def print_table_fields(con, c, fields_dict): # need to rework may need to also a
         for column in data.description:
             print(column[0])
 
+
 def print_table_data():
     '''
     samething as above, trying to decide if this method is necessary
     '''
     pass
+
+
+def get_distance(street_dict: dict, start_location: str, end_location: str) -> int:
+    
+    try:
+        distance = street_dict[start_location][end_location]
+        print(f'{start_location} and ending {end_location} with distance: {distance}')
+    except Exception as e:
+        print(f'{start_location} failed with {end_location}'
+        print(e)
+
+    return distance
+
+
+def get_delivery_time(distance: int, driver: str) -> float:
+    '''
+    Retrieves delivery time based on the driver and trip distance. 
+    It is meant to be used inside the create trip log folder
+    I might actually make this into two functions
+    '''
+    
+    if distance >= 50 and distance <= 100:
+        delivery_time = 50.0
+
+    elif distance > 100 and distance <= 200:
+        delivery_time = 80.0
+
+    elif distance > 200 and distance <= 300:
+        delivery_time = 250.0
+
+    elif distance > 300:
+        if driver in ('Chaos', 'Bertie', 'Shiner'):
+            delivery_time = 30.0
+
+        elif 'e' in driver and distance < 350: #name has no letter 'e' and distance below 350: 150
+            delivery_time = 150.0
+        
+        elif len(driver) < 4 and distance < 420: #the number of letters in name is no more than 4 and distance below 420: 420
+            delivery_time = 420.0
+
+        else:
+            delivery_time = 200.0
+    else:
+        delivery_time = None
+
+    return delivery_time
 
 
 def create_street_mapping_dictionary(number_of_total_streets: int) -> dict:
@@ -70,24 +118,32 @@ def create_street_mapping_dictionary(number_of_total_streets: int) -> dict:
             if n == m:
                 continue
 
-
             if n not in street_dict:
                 street_dict[m][n] = random.randint(50, 800) # currently populates a nested dictionary with values that do not match their permutated cousin
             else:
                 street_dict[m][n] = street_dict[n][m]
     return street_dict
 
+
 def create_trip_log( 
     total_number_of_trips: int, 
     driver_list: list, 
     street_dict: dict
-    ) -> tuple| list :
+    ) -> dict :
     ''' 
     Need to come up with a way that inserts data into the database or maybe just create a log for further use
     I know the current way i have the code working is that there is a number of items being stored in memory
     total_number_of_trips: int to represent the amount of trips created also resulting in the amount of data to insert into the database 
     driver_list :list a list of drivers to choose from 
     street_dict :dict for street mapping representation
+
+    returns a dictionary that has the following fields:
+    Trip_id
+    Driver
+    Start_location
+    End_location
+    Distance
+    Time
     '''
     trip_log = {}
     trip_ids = list(range(1, total_number_of_trips+1))
@@ -95,7 +151,11 @@ def create_trip_log(
     mapping_start_locations = random.choices(list(street_dict.keys()), k = total_number_of_trips)
     mapping_end_locations = random.choices(list(street_dict.keys()), k = total_number_of_trips)    
     for trip in range(total_number_of_trips):
-        trip_log[trip + 1] = { drivers_long_list[trip], mapping_start_locations[trip], mapping_end_locations[trip] }
+        distance = get_distance(street_dict, mapping_start_locations[trip], mapping_end_locations[trip])
+
+        delivery_time = get_delivery_time(distance, drivers_long_list[trip]) # maybe turn this into a function to grab for time?
+
+        trip_log[trip + 1] = (drivers_long_list[trip], mapping_start_locations[trip], mapping_end_locations[trip], delivery_time)
 
     return trip_log
 
@@ -142,21 +202,23 @@ def main():
 
 
     # ##### Playing with the code 
-    street_dict_mapping = create_street_mapping_dictionary(500) # mapping created need to insert this into db
-    trip_log = create_trip_log(10, ['Alon', 'Sarah', 'Hailey', 'Tyler', 'Chaos', 'Bertie', 'Shiner', 'Huy', 'Jon', 'Luis'], street_dict_mapping)
-    # for some reason the dictionary that im going to use to populate the db is not inserting in the right order
-    print(trip_log)
+    print('Creating Street mapping dictionary')
+    street_mapping = create_street_mapping_dictionary(500) # mapping created need to insert this into db
+    print('Successfully created mapping dictionary')
+    print(street_mapping['Street_85'])
+
+    print('Creating Trip log dictionary')
+
+    trip_log = create_trip_log(10000, ['Alon', 'Sarah', 'Hailey', 'Tyler', 'Chaos', 'Bertie', 'Shiner', 'Huy', 'Jon', 'Luis'], street_mapping)
+
+    # print('This is true log')
+
+    # print(trip_log)
+    print('This is success')
+
 
 
 if __name__ == "__main__":
     main()   
 
-# driver_list = ['Alon', 'Sarah', 'Hailey', 'Tyler', 'Chaos', 'Bertie', 'Shiner', 'Huy', 'Jon', 'Luis']
-# total_number_of_trips = 100
-# drivers_long_list = random.choices(driver_list, k = total_number_of_trips) # allows list to populate with repetited items
-# mapping_start_locations = random.choices(list(street_dict_mapping.keys()), k = 10)
-# mapping_end_locations = random.choices(list(street_dict_mapping.keys()), k = 10)
-# trip_ids = list(range(1, total_number_of_trips+1))
-# print(mapping_start_locations)
-# print('This is end locations')
-# print(mapping_end_locations)
+
