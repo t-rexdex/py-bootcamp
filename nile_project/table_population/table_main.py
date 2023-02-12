@@ -48,11 +48,6 @@ def print_table_fields(con, c, fields_dict): # need to rework may need to also a
             print(column[0])
 
 
-def print_table_data():
-    '''
-    samething as above, trying to decide if this method is necessary
-    '''
-    pass
 
 
 def get_distance(street_dict: dict, start_location: str, end_location: str) -> int:
@@ -71,10 +66,11 @@ def get_delivery_time(distance: int, driver: str) -> float:
     '''
     Retrieves delivery time based on the driver and trip distance. 
     It is meant to be used inside the create trip log folder
-    I might actually make this into two functions
+    I dont want to turn the mininimum distance into a global variable but rather
+    a class or instance variable
     '''
     
-    if distance >= 50 and distance <= 100:
+    if distance >= 50 and distance <= 100: # need to change the 50 to min distance or something
         delivery_time = 50.0
 
     elif distance > 100 and distance <= 200:
@@ -83,7 +79,7 @@ def get_delivery_time(distance: int, driver: str) -> float:
     elif distance > 200 and distance <= 300:
         delivery_time = 250.0
 
-    elif distance > 300:
+    elif distance > 300: # possibly change the 300 to some aribitrary value based on the max random distance 
         if driver in ('Chaos', 'Bertie', 'Shiner'):
             delivery_time = 30.0
 
@@ -104,6 +100,13 @@ def get_delivery_time(distance: int, driver: str) -> float:
 def create_street_mapping_dictionary(number_of_total_streets: int) -> dict:
     '''
     Creating a basic street mapping dictionary with distances between each street
+    50 and 800 need to become variables these variables need to get added somewhere. 
+    Thinking about possibly moving all this mapping creation into a class so that I can 
+    utilize the self argument to call upon values like that without having to reenter 
+    Also need to rewrite this dict creation in order to decrease the amount of wasted computation
+    resources. With large numbers of streets things get very messy and have a huge runtime. 
+    Need to find a way to create a dictionary that can be mirrored along the m = n axis but have be empty
+    beneath this line
     '''
     streets = []
     for street_number in range(number_of_total_streets):
@@ -118,7 +121,7 @@ def create_street_mapping_dictionary(number_of_total_streets: int) -> dict:
             if n == m:
                 continue
 
-            if n not in street_dict:
+            if n not in street_dict: # 50 and 800 need to become variables these variables need to get added somewhere. 
                 street_dict[m][n] = random.randint(50, 800) # currently populates a nested dictionary with values that do not match their permutated cousin
             else:
                 street_dict[m][n] = street_dict[n][m]
@@ -144,6 +147,11 @@ def create_trip_log(
     End_location
     Distance
     Time
+
+
+    Need to rethink how to create start and end lists. Some times start = end and we cannot have that for logically reasons
+    Perhaps this logic should be handled by a for loop to randomly grab in the dictionary and pop out the first street so that it cannot randomly select a new street
+    Need to read random documentation further
     '''
     trip_log = {}
     trip_ids = list(range(1, total_number_of_trips+1))
