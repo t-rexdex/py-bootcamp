@@ -1,7 +1,8 @@
 import random
-import sqlite3
-import itertools
+# import sqlite3
+# import itertools
 import os
+import pprint
 random.seed(420) # importing for reproducibility
 
 def create_connection(path_for_file: str) -> object : 
@@ -48,29 +49,14 @@ def print_table_fields(con, c, fields_dict): # need to rework may need to also a
             print(column[0])
 
 
-
-
-def get_distance(street_dict: dict, start_location: str, end_location: str) -> int:
-    
-    try:
-        distance = street_dict[start_location][end_location]
-        print(f'{start_location} and ending {end_location} with distance: {distance}')
-    except Exception as e:
-        print(f'{start_location} failed with {end_location}'
-        print(e)
-
-    return distance
-
-
 def get_delivery_time(distance: int, driver: str) -> float:
     '''
     Retrieves delivery time based on the driver and trip distance. 
     It is meant to be used inside the create trip log folder
-    I dont want to turn the mininimum distance into a global variable but rather
-    a class or instance variable
+    I might actually make this into two functions
     '''
     
-    if distance >= 50 and distance <= 100: # need to change the 50 to min distance or something
+    if distance >= 50 and distance <= 100: # need to changes that 50 to min(street_distance) or something like that
         delivery_time = 50.0
 
     elif distance > 100 and distance <= 200:
@@ -79,7 +65,7 @@ def get_delivery_time(distance: int, driver: str) -> float:
     elif distance > 200 and distance <= 300:
         delivery_time = 250.0
 
-    elif distance > 300: # possibly change the 300 to some aribitrary value based on the max random distance 
+    elif distance > 300:
         if driver in ('Chaos', 'Bertie', 'Shiner'):
             delivery_time = 30.0
 
@@ -96,17 +82,10 @@ def get_delivery_time(distance: int, driver: str) -> float:
 
     return delivery_time
 
-
-def create_street_mapping_dictionary(number_of_total_streets: int) -> dict:
+# need to update create street_mapping and delivery time methods to include min and max distances IE need to create a class for this
+def create_street_alt(number_of_total_streets: int, min_distance: int, max_distance: int) -> dict:
     '''
     Creating a basic street mapping dictionary with distances between each street
-    50 and 800 need to become variables these variables need to get added somewhere. 
-    Thinking about possibly moving all this mapping creation into a class so that I can 
-    utilize the self argument to call upon values like that without having to reenter 
-    Also need to rewrite this dict creation in order to decrease the amount of wasted computation
-    resources. With large numbers of streets things get very messy and have a huge runtime. 
-    Need to find a way to create a dictionary that can be mirrored along the m = n axis but have be empty
-    beneath this line
     '''
     streets = []
     for street_number in range(number_of_total_streets):
@@ -114,17 +93,16 @@ def create_street_mapping_dictionary(number_of_total_streets: int) -> dict:
     street_dict = {}
     for i in range(len(streets)): # goes from 0 > 1 > 2 
         m = streets[i] # street_i
-        street_dict[m] = {}    # lst2 = streets[:i] + streets[i+1:]
+        street_dict[m] = {}   
         for j in range(len(streets)):
             n = streets[j]
 
             if n == m:
                 continue
 
-            if n not in street_dict: # 50 and 800 need to become variables these variables need to get added somewhere. 
-                street_dict[m][n] = random.randint(50, 800) # currently populates a nested dictionary with values that do not match their permutated cousin
-            else:
-                street_dict[m][n] = street_dict[n][m]
+            if n not in street_dict: 
+                street_dict[m][n] = random.randint(min_distance, max_distance) # currently populates a nested dictionary with values that do not match their permutated cousin
+
     return street_dict
 
 
@@ -147,61 +125,38 @@ def create_trip_log(
     End_location
     Distance
     Time
-
-
-    Need to rethink how to create start and end lists. Some times start = end and we cannot have that for logically reasons
-    Perhaps this logic should be handled by a for loop to randomly grab in the dictionary and pop out the first street so that it cannot randomly select a new street
-    Need to read random documentation further
     '''
+
     trip_log = {}
-    trip_ids = list(range(1, total_number_of_trips+1))
-    drivers_long_list = random.choices(driver_list, k = total_number_of_trips) # allows list to populate with repetited items
-    mapping_start_locations = random.choices(list(street_dict.keys()), k = total_number_of_trips)
-    mapping_end_locations = random.choices(list(street_dict.keys()), k = total_number_of_trips)    
     for trip in range(total_number_of_trips):
-        distance = get_distance(street_dict, mapping_start_locations[trip], mapping_end_locations[trip])
+    # print out a pair of streets
+        driver = random.choice(driver_list)
+        pair= random.sample(sorted(street_dict), 2)
+        try:
+            trip_log[trip + 1] = (driver, pair[0], pair[1], get_delivery_time(street_dict[pair[0]][pair[1]], random.choice(driver)))
+        except:
+            trip_log[trip + 1] = (driver, pair[0], pair[1], get_delivery_time(street_dict[pair[1]][pair[0]], random.choice(driver)))
 
-        delivery_time = get_delivery_time(distance, drivers_long_list[trip]) # maybe turn this into a function to grab for time?
+ 
 
-        trip_log[trip + 1] = (drivers_long_list[trip], mapping_start_locations[trip], mapping_end_locations[trip], delivery_time)
-
+        
     return trip_log
 
-def need_to_contain():        
-# fill table 
-    n = 100 # number of rows in the table 
-    trip_ids = list(range(1,n+1)) # 1) trip_id: a unique number from 1 to 100,000. Meaning the table will have 100,000 unique records
-
-    drivers = ['Alon', 'Sarah', 'Hailey', 'Tyler', 'Chaos', 'Bertie', 'Shiner', 'Huy', 'Jon', 'Luis'] # 2) name: a random string chosen from (alon, sarah, hailey, tyler, chaos, birtie, shiner, huy, jon, luis)
-
-   
- 
-
-    ''' 
-    random functions to hopefully make sense soon 
-    '''
-    value = random.uniform(1, 10) # if i wanted a float between 1 and 10
-    value_6 = random.randint(1, 6) # if i wanted a int between 1 and 10
-    #
-# print(tuple(assign_driver)[:200]) # print if you want to see the output but not necessary anymore
  
 # now need to create something that goes through this list and places into the sql table
-
-# with random.choices use something like the to go through a list of streets and create addresses 
-
 
 def main():
     # con, c = create_connection('./nile_project/table_population/file.db') # establish connection
 
-    tables = {
-        'Trip_info': {
-            'Trip_id': 'str PRIMARY KEY',
-            'name': 'str',
-            'source_location': 'str', 
-            'destination_location': 'str', 
-            'duration_mins': 'float', 
-        } # data to create tables
-    }
+    # tables = {
+    #     'Trip_info': {
+    #         'Trip_id': 'str PRIMARY KEY',
+    #         'name': 'str',
+    #         'source_location': 'str', 
+    #         'destination_location': 'str', 
+    #         'duration_mins': 'float', 
+    #     } # data to create tables
+    # }
 
 
     # create_table(con, c, tables) 
@@ -211,22 +166,27 @@ def main():
 
     # ##### Playing with the code 
     print('Creating Street mapping dictionary')
-    street_mapping = create_street_mapping_dictionary(500) # mapping created need to insert this into db
+    # street_mapping = create_street_mapping_dictionary(5000) # mapping created need to insert this into db
+    street_mapping = create_street_alt(50000, 60, 800)
     print('Successfully created mapping dictionary')
-    print(street_mapping['Street_85'])
 
+    print('\n\n\n\n')
     print('Creating Trip log dictionary')
 
-    trip_log = create_trip_log(10000, ['Alon', 'Sarah', 'Hailey', 'Tyler', 'Chaos', 'Bertie', 'Shiner', 'Huy', 'Jon', 'Luis'], street_mapping)
+    trip_log = create_trip_log(100000, ['Alon', 'Sarah', 'Hailey', 'Tyler', 'Chaos', 'Bertie', 'Shiner', 'Huy', 'Jon', 'Luis'], street_mapping)
 
     # print('This is true log')
 
-    # print(trip_log)
-    print('This is success')
+    print('Log is completed')
+    # pprint.pprint(trip_log)
+
+
 
 
 
 if __name__ == "__main__":
     main()   
+
+
 
 
