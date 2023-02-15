@@ -48,14 +48,15 @@ def print_table_fields(con, c, fields_dict): # need to rework may need to also a
         for column in data.description:
             print(column[0])
 class table_generation():
-    street_dict = {}
     def __init__(self, min_distance: int | float, max_distance: int | float, number_of_total_streets: int, total_number_of_trips: int, drivers_list: list ) -> None:
         self.min_distance = min_distance
         self.max_distance = max_distance
         self.number_of_total_streets = number_of_total_streets
         self.total_number_of_trips = total_number_of_trips
         self.drivers_list = drivers_list
-        self.street_dict = self.create_street_alt()
+        self.street_dict = self.create_street_mapping() # huy raised a decent point about this existing within the class
+        # street locations are static, with the exception of adding new locations
+        # so i think i will remove  the create_street_alt() from the class
 
     def __repr__(self):
         return f'This trip log contains {self.total_number_of_trips} trips made between {self.number_of_total_streets} addresses'
@@ -70,7 +71,7 @@ class table_generation():
         I might actually make this into two functions
         '''
         
-        if distance >= 50 and distance <= 100: # need to changes that 50 to min(street_distance) or something like that
+        if distance >= self.min_distance and distance <= 100: # need to changes that 50 to min(street_distance) or something like that
             delivery_time = 50.0
 
         elif distance > 100 and distance <= 200:
@@ -97,12 +98,13 @@ class table_generation():
         return delivery_time
 
     # need to update create street_mapping and delivery time methods to include min and max distances IE need to create a class for this
-    def create_street_alt(self) -> dict:
+    def create_street_mapping(self) -> dict:
         '''
         Creating a basic street mapping dictionary with distances between each street
         '''
         streets = []
-        for street_number in range(self.number_of_total_streets):
+        # can probably condense this whole function further 
+        for street_number in range(self.number_of_total_streets): # want to condense lines 106 and 107
             streets.append('Street_' + str(street_number+1))
         street_dict = {}
         for i in range(len(streets)): # goes from 0 > 1 > 2 
@@ -183,7 +185,7 @@ def main():
     # print('\n\n\n\n')
     print('Creating Trip log dictionary')
 
-    trip_log = table_generation.create_trip_log(100000, ['Alon', 'Sarah', 'Hailey', 'Tyler', 'Chaos', 'Bertie', 'Shiner', 'Huy', 'Jon', 'Luis'], table_generation.create_street_alt(500, 60, 800))
+    trip_log = table_generation.create_trip_log(100000, ['Alon', 'Sarah', 'Hailey', 'Tyler', 'Chaos', 'Bertie', 'Shiner', 'Huy', 'Jon', 'Luis'], table_generation.create_street_mapping(500, 60, 800))
 
     # print('This is true log')
 

@@ -26,17 +26,21 @@ def test_delivery_time(distance, driver, expected_result):
     assert tg1.get_delivery_time(distance, driver) == expected_result # check first if statement
 
 def test_create_street_mapping():
+    # Testing for the amount of keys be the same as line 11, the third argument 5
     expected_ans = 5
     assert len(tg1.street_dict.keys()) == expected_ans
 
+    # Testing that the string creation of the keys properly numbers
     expected_ans = ['Street_1', 'Street_2', 'Street_3', 'Street_4', 'Street_5']
     assert list(tg1.street_dict.keys()) == expected_ans
 
+    # Testing if last key is empty to save memory space with larger generations sizes
     expected_ans = {}
     assert tg1.street_dict['Street_5'] == expected_ans
    
 # how do i break program to receive delivery_time = None?
-
+    # maybe test that some locations exist within an another key
+    # maybe use a test to find the minimum distance, max distance
 
 
 
