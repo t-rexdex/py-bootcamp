@@ -9,6 +9,8 @@ drivers = ['Alon', 'Sarah', 'Hailey', 'Tyler', 'Chaos', 'Bertie', 'Shiner', 'Huy
 # trip_log = table_main.create_trip_log(10000, drivers, table_main.create_street_alt(500, 60, 800))
 # src.main()
 tg1 = tg(50,800,5,5, drivers)
+# street_mapping = tg1.street_dict
+print(tg1.street_dict['Street_5'])
 # pprint.pprint(trip_log1.street_dict['Street_480'])
 
 
@@ -22,6 +24,16 @@ tg1 = tg(50,800,5,5, drivers)
     (325, 'Hailey', 150.0) ] )
 def test_delivery_time(distance, driver, expected_result):
     assert tg1.get_delivery_time(distance, driver) == expected_result # check first if statement
+
+def test_create_street_mapping():
+    expected_ans = 5
+    assert len(tg1.street_dict.keys()) == expected_ans
+
+    expected_ans = ['Street_1', 'Street_2', 'Street_3', 'Street_4', 'Street_5']
+    assert list(tg1.street_dict.keys()) == expected_ans
+
+    expected_ans = {}
+    assert tg1.street_dict['Street_5'] == expected_ans
    
 # how do i break program to receive delivery_time = None?
 
