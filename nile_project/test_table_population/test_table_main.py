@@ -23,10 +23,16 @@ drivers = ['Alon', 'Sarah', 'Hailey', 'Tyler', 'Chaos', 'Bertie', 'Shiner', 'Huy
 
 street_mapping = create_street_mapping(number_of_total_streets, min_distance, max_distance)
 tg1 = table_generation(min_distance, max_distance, total_number_of_trips, drivers)
+trip_log = tg1.create_trip_log(street_mapping)
+print(trip_log[1][1], trip_log[1][2])
 print(street_mapping)
-# print(tg1.street_dict['Street_5'])
-pprint.pprint(tg1.create_trip_log(street_mapping))
-
+'''
+{1: ('Alon', 'Street_5', 'Street_3', 200.0),
+ 2: ('Huy', 'Street_1', 'Street_2', 50.0),
+ 3: ('Jon', 'Street_3', 'Street_4', 200.0),
+ 4: ('Chaos', 'Street_1', 'Street_3', 30.0),
+ 5: ('Chaos', 'Street_2', 'Street_1', 50.0)}
+ '''
 
 @pytest.mark.parametrize('distance, driver ,expected_result',[
     (50,'Alon', 50.0),
@@ -35,7 +41,7 @@ pprint.pprint(tg1.create_trip_log(street_mapping))
     (330, 'Chaos', 30.0),
     (419, 'Huy', 420.0),
     (325, 'Alon',200.0),
-    (325, 'Hailey', 150.0) ] )
+    (325, 'Hailey', 150.0)] )
 def test_delivery_time(distance, driver, expected_result):
     assert tg1.get_delivery_time(distance, driver) == expected_result # check first if statement
 
@@ -57,9 +63,18 @@ def test_create_street_mapping():
 @pytest.mark.parametrize('start_location, end_location, expected_result',[
     ('Street_1', 'Street_2', 76),
     ('Street_2','Street_4', 147),
-    ('Street_4', 'Street_2', 147)]) 
+    ('Street_4', 'Street_2', 147),
+    (trip_log[1][1], trip_log[1][2], 722) ])
 def test_get_distance(start_location, end_location, expected_result):
    assert get_distance(street_mapping, start_location, end_location) == expected_result
+
+
+@pytest.mark.parametrize('key, driver, time, expected_driver, expected_time',[
+    (1,0,3,'Alon', 200.0),
+    (4,0,3, 'Chaos', 30.0),
+    (5,0,3, 'Chaos', 50.0) ])
+def test_classes_trip_log(key, driver, time, expected_driver, expected_time):
+    assert (trip_log[key][driver], trip_log[key][time])  == (expected_driver, expected_time)
    
 
 
