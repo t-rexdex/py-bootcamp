@@ -2,7 +2,7 @@ import pytest
 import sys
 sys.path.append('./nile_project')
 from table_population.table_main  import *
-import pprint
+
 
 
 '''
@@ -13,6 +13,19 @@ total_number_of_trips = 5
 min_distance = 50
 max_distance = 800
 drivers = ['Alon', 'Sarah', 'Hailey', 'Tyler', 'Chaos', 'Bertie', 'Shiner', 'Huy', 'Jon', 'Luis']
+
+{'Street_1': {'Street_2': 76, 'Street_3': 739, 'Street_4': 423, 'Street_5': 329}, 
+ 'Street_2': {'Street_3': 462, 'Street_4': 147, 'Street_5': 729},
+ 'Street_3': {'Street_4': 744, 'Street_5': 722}, 
+ 'Street_4': {'Street_5': 166}, 
+ 'Street_5': {}}
+
+{1: ('Alon', 'Street_5', 'Street_3', 200.0),
+ 2: ('Huy', 'Street_1', 'Street_2', 50.0),
+ 3: ('Jon', 'Street_3', 'Street_4', 200.0),
+ 4: ('Chaos', 'Street_1', 'Street_3', 30.0),
+ 5: ('Chaos', 'Street_2', 'Street_1', 50.0)}
+
 '''
 
 number_of_total_streets = 5
@@ -24,15 +37,7 @@ drivers = ['Alon', 'Sarah', 'Hailey', 'Tyler', 'Chaos', 'Bertie', 'Shiner', 'Huy
 street_mapping = create_street_mapping(number_of_total_streets, min_distance, max_distance)
 tg1 = table_generation(min_distance, max_distance, total_number_of_trips, drivers)
 trip_log = tg1.create_trip_log(street_mapping)
-print(trip_log[1][1], trip_log[1][2])
-print(street_mapping)
-'''
-{1: ('Alon', 'Street_5', 'Street_3', 200.0),
- 2: ('Huy', 'Street_1', 'Street_2', 50.0),
- 3: ('Jon', 'Street_3', 'Street_4', 200.0),
- 4: ('Chaos', 'Street_1', 'Street_3', 30.0),
- 5: ('Chaos', 'Street_2', 'Street_1', 50.0)}
- '''
+
 
 @pytest.mark.parametrize('distance, driver ,expected_result',[
     (50,'Alon', 50.0),

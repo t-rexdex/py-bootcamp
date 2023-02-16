@@ -2,22 +2,21 @@ import random
 import itertools
 
 random.seed(420) # importing for reproducibility
+          
 
-
-###########################################################################################            
-
-def create_street_mapping(number_of_total_streets, min_distance, max_distance) -> dict:
+def create_street_mapping(number_of_total_streets: int, min_distance: int | float, max_distance: int | float) -> dict:
     '''
-    Creating a basic street mapping dictionary with distances between each street
+    Creating a basic street mapping dictionary with distances between each street using the random module
+    first key will have the most mappings and the last key will be empty in order to cut down on computation size.
     '''
     streets = []
-    # can probably condense this whole function further 
-    for street_number in range(number_of_total_streets): # want to condense lines 57 & 58
-        streets.append('Street_' + str(street_number+1))
+    streets = [('Street_' + str(street_number+1)) for street_number in range(number_of_total_streets)]  
     street_mapping = {}
+
     for outer_loop in range(len(streets)):  
         starting_loc = streets[outer_loop]
-        street_mapping[starting_loc] = {}   
+        street_mapping[starting_loc] = {} 
+
         for inner_loop in range(len(streets)):
             ending_loc = streets[inner_loop]
 
@@ -26,11 +25,14 @@ def create_street_mapping(number_of_total_streets, min_distance, max_distance) -
 
             if ending_loc not in street_mapping: 
                 street_mapping[starting_loc][ending_loc] = random.randint(min_distance, max_distance) 
-            # i believe these if loops should be something to cover an else statement
+
     return street_mapping 
 
 
-def get_distance(street_mapping, start_location, end_location):
+def get_distance(street_mapping: dict, start_location: str, end_location: str) -> int | float:
+    '''
+    Uses any street_mapping, takes in two strings 'Street_ ' and returns the distance between the two locations 
+    '''
     try :
         distance = street_mapping[start_location][end_location]
     except:
@@ -41,6 +43,7 @@ def get_distance(street_mapping, start_location, end_location):
 
 
 class table_generation():
+
     def __init__(self, min_distance: int | float, max_distance: int | float, total_number_of_trips: int, drivers_list: list ) -> None:
         self.min_distance = min_distance
         self.max_distance = max_distance
@@ -49,14 +52,12 @@ class table_generation():
 
 
     def __repr__(self):
-        return f'This trip log contains {self.total_number_of_trips} trips made between {self.number_of_total_streets} addresses'
+        return f'This trip log contains {self.total_number_of_trips} trips'
 
 
     def get_delivery_time(self, distance: int, driver: str) -> float:
         '''
         Retrieves delivery time based on the driver and trip distance. 
-        It is meant to be used inside the create trip log folder
-        I might actually make this into two functions
         '''
         
         if distance >= self.min_distance and distance <= 100: 
@@ -87,25 +88,23 @@ class table_generation():
 
 
 
-    def create_trip_log(self, street_mapping) -> dict :
+    def create_trip_log(self, street_mapping: dict) -> dict :
         ''' 
-        total_number_of_trips: int to represent the amount of trips created also resulting in the amount of data to insert into the database 
-        driver_list :list a list of drivers to choose from 
-        street_dict :dict for street mapping representation
-        returns a dictionary that has the following fields:
-        Trip_id:
-        {
-        Driver
-        Start_location
-        End_location
-        Time 
+        Trip log returns a dictionary that has the following fields:
+        { Trip_id:
+            {
+                Driver
+                Start_location
+                End_location
+                Time 
+            }
         }
         '''
 
         trip_log = {}
         for trip in range(self.total_number_of_trips):
             driver = random.choice(self.drivers_list)
-            start,end= random.sample(sorted(street_mapping), 2)
-            trip_log[trip + 1] = (driver, start, end, self.get_delivery_time(get_distance(street_mapping, start, end), driver))
+            start_location, end_location= random.sample(sorted(street_mapping), 2)
+            trip_log[trip + 1] = (driver, start_location, end_location, self.get_delivery_time(get_distance(street_mapping, start_location, end_location), driver))
             
         return trip_log
