@@ -61,8 +61,15 @@ class table_generation():
     def __repr__(self):
         return f'This trip log contains {self.total_number_of_trips} trips made between {self.number_of_total_streets} addresses'
 
-    def get_distance():
-        pass
+    def get_distance(self, start_location, end_location):
+
+        try :
+            distance = self.street_dict[start_location][end_location]
+        except:
+            distance = self.street_dict[end_location][start_location]
+        
+        return distance
+            
 
     def get_delivery_time(self, distance: int, driver: str) -> float:
         '''
@@ -107,17 +114,17 @@ class table_generation():
         for street_number in range(self.number_of_total_streets): # want to condense lines 106 and 107
             streets.append('Street_' + str(street_number+1))
         street_dict = {}
-        for i in range(len(streets)): # goes from 0 > 1 > 2 
-            m = streets[i] # street_i
-            street_dict[m] = {}   
-            for j in range(len(streets)):
-                n = streets[j]
+        for outer_loop in range(len(streets)): # goes from 0 > 1 > 2 
+            starting_loc = streets[outer_loop] # street_i
+            street_dict[starting_loc] = {}   
+            for inner_loop in range(len(streets)):
+                ending_loc = streets[inner_loop]
 
-                if n == m:
+                if ending_loc == starting_loc:
                     continue
 
-                if n not in street_dict: 
-                    street_dict[m][n] = random.randint(self.min_distance, self.max_distance) # currently populates a nested dictionary with values that do not match their permutated cousin
+                if ending_loc not in street_dict: 
+                    street_dict[starting_loc][ending_loc] = random.randint(self.min_distance, self.max_distance) 
 
         return street_dict
 
@@ -141,16 +148,9 @@ class table_generation():
 
         trip_log = {}
         for trip in range(self.total_number_of_trips):
-        # print out a pair of streets
             driver = random.choice(self.drivers_list)
-            pair= random.sample(sorted(self.street_dict), 2)
-            try:
-                trip_log[trip + 1] = (driver, pair[0], pair[1], self.get_delivery_time(self.street_dict[pair[0]][pair[1]], driver))
-            except:
-                trip_log[trip + 1] = (driver, pair[0], pair[1], self.get_delivery_time(self.street_dict[pair[1]][pair[0]], driver))
-
-    
-
+            start,end= random.sample(sorted(self.street_dict), 2)
+            trip_log[trip + 1] = (driver, start, end, self.get_delivery_time(self.get_distance(start, end), driver))
             
         return trip_log
 
