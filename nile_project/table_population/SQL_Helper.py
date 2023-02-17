@@ -79,36 +79,8 @@ def dict_to_list_for_import(some_dict: dict) -> list:
 def fill_table(con, c, some_dict, table_name = ""):
     '''
     Create a method to take in a dictionary and insert that into a table 
-    may need to reinsert the table that it used to create fields to fill in the (insert into table_name VALUES() columns)
-    having issues with the columns string. 
-    outputing as: (1, Alon, Street_5, Street_3, 200.0)
-    needs to be: (1, 'Alon', 'Street_5', 'Street_3', 200.0)
-    what do i need to do the have those parts of the string to be read correctly
+    takes in a dictionary but converts to list for my comprehension
+    '''
 
-    # you can iterate through lst[i]
-
-
-            fields = "(" + ",   ".join(["{}".format(k) for k in list(fields_dict[table_name].keys())]) + ")"
-            columns = "(" + "".join(f"{outerlst[0]}, {outerlst[1]}, {outerlst[2]}, {outerlst[3]}, {outerlst[4]}") + ")"
-            c = con.cursor()
-            c.execute("INSERT INTO " + table_name + fields + "\nVALUES" + columns +";") 
-            # outputing as: (1, Alon, Street_5, Street_3, 200.0)
-            # needs to be: (1, 'Alon', 'Street_5', 'Street_3', 200.0) 
-            # hints it can be related to using fields_dict i believe if i do this itll allow me to use executemany
-            # maybe haing something that looks into fields dict at that index and if type is text then the in the trip log
-            # we should have the names, start and end should have an output to match 'Driver' 'Street_start' 'Street_end'
-            # that and we may also need to change the way the outerlist is read?
-                # print(tables['Trip_info'].values())
-                # print(tables['Trip_info'].keys())
-                # print(list(tables['Trip_info'].keys())[3:])
-
-
-        con.commit()
-
-
-# INSERT INTO table (column1,column2 ,..)
-# VALUES( value1,	value2 ,...);
-'''
-    # lst = dict_to_list_for_import(some_dict)
     c.executemany("INSERT INTO " + table_name + " VALUES (?, ?, ?, ?, ?)", dict_to_list_for_import(some_dict))
     con.commit()
