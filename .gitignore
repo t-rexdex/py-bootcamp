@@ -1,3 +1,7 @@
 .idea
 .flake8
-
+.pytest_cache
+nile_project/__pycache__
+nile_project/test_nile/__pycache__
+nile_project/test_nile/__init__.py
+working_test_nile/
