@@ -1,86 +1,45 @@
 import sqlite3
 import os
 
-def create_connection(path_for_file: str) -> object : 
-    # create a way to test if file exists in directory
-    try:
-        if os.path.isfile(path_for_file):
-            os.remove(path_for_file)
-            print('File already exists. Reestablishing connection')
+class mysqlite3():
+    db_path = './nile_project/table_population/file.db'
+    def __init__(self): 
+        if os.path.isfile(self.db_path):
+            os.remove(self.db_path)
+            print('\nFile already exists. Reinitializing database.\n')
         else:
-            print('Creating database and establishing a connection')
-        con = sqlite3.connect(path_for_file)
-        c = con.cursor()
-    except Exception as e:
-        print(e)
+            print('\nCreating database\n')
+        self.connection = sqlite3.connect(self.db_path)
+        self.cur = self.connection.cursor()
 
-    return con, c
-        
-    
-def create_table(con, c, fields_dict: dict):
-    '''
-    Need to create a test file for testing these methods
-     tables = {
-        'Trip_info': {
-            'Trip_id': 'int PRIMARY KEY',
-            'name': 'str',
-            'source_location': 'str', 
-            'destination_location': 'str', 
-            'duration_mins': 'float', 
-        } # data to create tables
-    }
-    '''
+    def __enter__(self): 
+        return self
 
+    def __exit__(self, ext_type, exc_value, traceback):
+        self.cur.close()
+        if isinstance(exc_value, Exception):
+            self.connection.rollback()
+        else:
+            self.connection.commit()
+        self.connection.close()
 
-    try:
-        for table in fields_dict:
-            columns = "(" + ",\n".join(["{} {}".format(k,v) for k,v in fields_dict[table].items()]) + ")"
-            c = con.cursor()
-            c.execute("CREATE TABLE " + table + "\n" + columns) # there has to be a better way to implement the name of this table
-            con.commit()
-            # print(f'Table {table} was created with the following fields \n{columns}')
-            print('Table was sucessfully created')
-    except Exception as e:
-        print(e)
+    def create_table(self, fields):
+        columns = "(" + ",\n".join(["{} {}".format(k,v) for k,v in fields['Trip_info'].items()]) + ")"
+        self.cur.execute("CREATE TABLE Trip_info\n" + columns)
 
+    def executemany(self, data):
+        self.cur.executemany("INSERT INTO Trip_info VALUES (?, ?, ?, ?, ?)", self.dict_to_list_for_import(data))
 
-def print_table_fields(con, c, fields_dict): # need to rework may need to also add the cursor, maybe create a class so self can be thrown into the attributes
-    '''
-    Not perfectly executed, deciding if this is necessary or not, 
-    It is mostly for debugging and my personal use.
-    '''
-    for table in fields_dict:
-        print(f'\nColumns in {table} table:')
-        data=c.execute("SELECT * FROM " + table ) # need to fix this line so sqlite can properly call the correct table
-        for column in data.description:
-            print(column[0])
+    def dict_to_list_for_import(self, some_dict: dict) -> list:
+        lst = []
+        for tple in some_dict.items():
+            outerlst = []   
+            for item in tple:
+                if type(item) == tuple:
+                    for i in item:
+                        outerlst.append(i)
+                else:
+                    outerlst.append(item)
+            lst.append(outerlst)
+        return lst
 
-
-def check_size_of_insert_table_and_trip_log(table, trip_log):
-    '''
-    possibly create this method to check if values will successfully enter into db based on called table and trip_log
-    '''
-    pass
-
-
-def dict_to_list_for_import(some_dict: dict) -> list:
-    lst = []
-    for tple in some_dict.items():
-        outerlst = []   
-        for item in tple:
-            if type(item) == tuple:
-                for i in item:
-                    outerlst.append(i)
-            else:
-                outerlst.append(item)
-        lst.append(outerlst)
-    return lst
-
-def fill_table(con, c, some_dict, table_name = ""):
-    '''
-    Create a method to take in a dictionary and insert that into a table 
-    takes in a dictionary but converts to list for my comprehension
-    '''
-
-    c.executemany("INSERT INTO " + table_name + " VALUES (?, ?, ?, ?, ?)", dict_to_list_for_import(some_dict))
-    con.commit()
