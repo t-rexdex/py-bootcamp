@@ -1,13 +1,16 @@
+import sys
 from Generator import table_generation, create_street_mapping, get_distance
 from SQL_Helper import mysqlite3 as ms3
 
 def main():
-    number_of_total_streets = 50
-    total_number_of_trips = 1000
-    min_distance = 50
-    max_distance = 800
+# need to contain these in argparse
+######################################################
+    number_of_total_streets = int(sys.argv[1])
+    total_number_of_trips = int(sys.argv[2])
+    min_distance = float(sys.argv[3])
+    max_distance = float(sys.argv[4])
     drivers = ['Alon', 'Sarah', 'Hailey', 'Tyler', 'Chaos', 'Bertie', 'Shiner', 'Huy', 'Jon', 'Luis']
-
+######################################################
     street_mapping = create_street_mapping(number_of_total_streets, min_distance, max_distance)
 
     tg1 = table_generation(min_distance, max_distance, total_number_of_trips, drivers)
