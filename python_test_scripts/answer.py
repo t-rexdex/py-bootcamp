@@ -19,37 +19,17 @@ def maxProfit(prices: list[int]) -> int:
     You want to maximize your profit by choosing a single day to buy one stock and choosing a different day in the future to sell that stock.
     Return the maximum profit you can achieve from this transaction. If you cannot achieve any profit, return 0.
     '''
-    # length = len(prices)
-    # idx = 0
-    # for day in prices:
-    #     idx += 1
-    #     for next_day in prices(idx+1:)
-    # for day in prices:
-    #     old_profit = 0
-    #     if day == prices[0]:
-    #         min = day
-    #     elif day < min:
-    #         min = day
-    #     elif day > min and (day - min) > old_profit :
-    #         profit = day - min
-    #     elif day == min:
-    #         pass
-    #     else:
-    #         profit = 0
-    # print(profit)
-    pass
-# maxProfit([7,1,5,3,6,4])
-# maxProfit([7,6,4,3,1])
-lst = [7,5,3,6,4, 1]
-length = len(lst)
-idx = 3
-
-for i in range(len(lst)):
-    #go through each day
-    if lst[i]  ==  min(lst):
-        old_profit = 0
-        for day in lst[i+1:]:
-            profit = day - min(lst)
-            old_profit = profit # the current train of thought has me wanting to go back and forth on nested if and for loops.
-            #not good 
-            print(f'Todays cost is {day}, and the profit to sell today would be {day-min(lst)}, and yesterdays profit was{ old_profit}')
+    for i in range(len(prices)):
+        if prices[i] == min(prices):
+            # remaining_days = lst[i+1:]
+            max_profit = 0
+            for day in prices[i+1:]:
+                todays_profit = day - min(prices)
+                if todays_profit > max_profit:
+                    max_profit = todays_profit
+                else:
+                    profit = todays_profit
+        elif min(prices) == prices[-1]:
+            max_profit = 0
+    return max_profit
+        

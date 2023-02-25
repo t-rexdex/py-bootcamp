@@ -15,4 +15,4 @@ def test_kids_wCandies(candies, extraCandies, expectedAns):
         ([7,6,4,3,1], 0) 
     ])
 def test_maxProfit(prices, expectedAns):
-    pass
+    assert maxProfit(prices) == expectedAns
